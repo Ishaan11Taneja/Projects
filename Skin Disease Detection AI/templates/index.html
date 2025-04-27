@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinCare AI - Advanced Skin Disease Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #2C3E50;
+            --accent-color: #E74C3C;
+            --background-color: #1A1A2E;
+            --card-bg: #16213E;
+            --text-color: #ECF0F1;
+            --text-muted: #95A5A6;
+            --success-color: #2ECC71;
+            --warning-color: #F1C40F;
+            --error-color: #E74C3C;
+            --light-blue: #3498DB;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--card-bg);
+            padding: 1rem 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            color: var(--text-color) !important;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-color);
+            animation: heartBeat 1.5s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes heartBeat {
+            0% {
+                transform: scale(1);
+                color: var(--accent-color);
+            }
+            25% {
+                transform: scale(1.2);
+                color: #ff6b6b;
+            }
+            50% {
+                transform: scale(1);
+                color: var(--accent-color);
+            }
+            75% {
+                transform: scale(0.8);
+                color: #ff6b6b;
+            }
+            100% {
+                transform: scale(1);
+                color: var(--accent-color);
+            }
+        }
+
+        .navbar-brand i:hover {
+            animation: heartBeat 0.8s ease-in-out infinite;
+            filter: drop-shadow(0 0 5px var(--accent-color));
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--card-bg) 0%, var(--background-color) 100%);
+            padding: 8rem 0 4rem;
+            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+            opacity: 0.1;
+            animation: zoomIn 20s infinite alternate;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .hero-content {
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            animation: slideInLeft 1s ease-out 0.2s backwards;
+        }
+
+        .upload-area {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: 2px dashed var(--primary-color);
+            animation: fadeIn 1s ease-out 0.4s backwards;
+        }
+
+        .upload-area:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-color: var(--accent-color);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            animation: fadeIn 1s ease-out 0.6s backwards;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .analysis-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 2rem;
+            animation: slideInUp 1s ease-out;
+        }
+
+        .stat-card {
+            background: var(--background-color);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-color: var(--primary-color);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .report-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            transform: translateY(-2px);
+        }
+
+        .confidence-meter {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 5px;
+            transition: width 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confidence-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        .footer {
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--card-bg);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: rotate 1s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        #preview {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        #preview:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <!-- Modern Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat"></i>
+                SkinCare AI
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+    <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                        <h1 class="hero-title">Advanced Skin Disease Detection</h1>
+                    <p class="hero-subtitle">Experience the future of dermatological diagnosis with our cutting-edge AI technology. Get instant, accurate analysis and professional medical insights.</p>
+                </div>
+                <div class="col-lg-6">
+                <div class="upload-area" id="dropZone">
+                        <div class="upload-content">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                            <h3>Drag & Drop Your Image</h3>
+                            <p>or</p>
+                            <div class="button-group">
+                                <label for="fileInput" class="upload-btn" id="chooseBtn">
+                                    <i class="fas fa-camera"></i> Choose Image
+                                </label>
+                                <button class="upload-btn d-none" id="analyzeBtn" disabled>
+                                    <i class="fas fa-search"></i> Analyze Image
+                                </button>
+                </div>
+                            <input type="file" id="fileInput" accept="image/*" class="d-none">
+                            <div class="image-preview mt-4 d-none">
+                                <img id="previewImage" src="" alt="Preview" class="img-fluid rounded">
+                                <button class="btn btn-outline-danger btn-sm mt-2" id="removeImage">
+                                    <i class="fas fa-times"></i> Remove Image
+                    </button>
+                </div>
+            </div>
+        </div>
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <!-- Preview Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="preview-container text-center">
+                    <img id="preview" class="img-fluid rounded" style="display: none; max-height: 400px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Section -->
+        <div id="analysisSection" class="analysis-section" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-value" id="confidenceValue">0%</div>
+                                <div class="stat-label">Confidence Level</div>
+                        <div class="progress mt-3">
+                            <div class="progress-bar confidence-fill" role="progressbar" style="width: 0%"></div>
+                        </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-value" id="severityValue">-</div>
+                                <div class="stat-label">Severity Level</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card">
+                                <div class="stat-value" id="recommendationValue">-</div>
+                                <div class="stat-label">Recommendation</div>
+                            </div>
+                        </div>
+                    </div>
+
+            <!-- Probability Chart -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="chart-container">
+                        <canvas id="probabilityChart"></canvas>
+                    </div>
+                </div>
+                </div>
+
+            <!-- Detailed Report -->
+            <div class="report-section mt-4">
+                        <div class="report-header">
+                    <h5><i class="fas fa-file-medical-alt me-2"></i>Detailed Analysis Report</h5>
+                            <div class="report-actions">
+                                <button class="btn btn-outline-secondary" id="downloadPdf">
+                                    <i class="fas fa-download me-2"></i>Download PDF
+                                </button>
+                                <button class="btn btn-outline-secondary" id="shareReport">
+                            <i class="fas fa-share-alt me-2"></i>Share Report
+                                </button>
+                            </div>
+                        </div>
+                        <div class="report-content">
+                    <div class="report-section">
+                        <h5><i class="fas fa-stethoscope me-2"></i>Diagnosis Summary</h5>
+                            <p id="diagnosisSummary"></p>
+                    </div>
+                    <div class="report-section">
+                        <h5><i class="fas fa-clipboard-list me-2"></i>Key Findings</h5>
+                            <ul id="keyFindings"></ul>
+                    </div>
+                    <div class="report-section">
+                        <h5><i class="fas fa-prescription-bottle-medical me-2"></i>Treatment Recommendations</h5>
+                            <ul id="treatmentRecommendations"></ul>
+                    </div>
+                    <div class="report-section">
+                        <h5><i class="fas fa-calendar-check me-2"></i>Follow-up Schedule</h5>
+                            <p id="followUpSchedule"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Analyzing image...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-heartbeat me-2"></i>SkinCare AI</h5>
+                    <p>Experience the future of dermatological diagnosis with our advanced AI technology. Get instant, accurate analysis and professional medical insights.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5><i class="fas fa-info-circle me-2"></i>About</h5>
+                    <p>This tool is designed to assist in preliminary skin condition assessment. Always consult a healthcare professional for accurate diagnosis and treatment.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html> 
